@@ -1,7 +1,7 @@
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import logo from "../../constants/logo.png";
+import logo from "../../constants/logo.svg";
 import { SearchBar } from "../";
 import { useColorMode } from "../../theme/color-mode-context";
 
