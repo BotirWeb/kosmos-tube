@@ -12,33 +12,89 @@ import {
 } from "@mui/icons-material";
 import { Videos, Loader } from "../";
 
+const formatCount = (value) =>
+  value === undefined || value === null
+    ? "—"
+    : parseInt(value, 10).toLocaleString("en-US");
+
 const VideoDetail = () => {
   const [videoDetail, setVideoDetail] = useState(null);
   const [relatedVideo, setRelatedVideo] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(true);
+  const [error, setError] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
+    let cancelled = false;
+
     const getData = async () => {
+      setIsLoading(true);
+      setIsLoadingRelated(true);
+      setError(null);
+
       try {
         const data = await ApiService.fetching(
           `videos?part=snippet,statistics&id=${id}`
         );
-        setVideoDetail(data.items[0]);
+        const detail = data?.items?.[0] ?? null;
+        if (cancelled) return;
 
-        //  suggested video data
+        setVideoDetail(detail);
+        setIsLoading(false);
+
+        // The API's relatedToVideoId parameter was removed in 2023, so we
+        // show other uploads from the same channel instead.
+        const channelId = detail?.snippet?.channelId;
+        if (!channelId) {
+          setRelatedVideo([]);
+          setIsLoadingRelated(false);
+          return;
+        }
+
         const relatedData = await ApiService.fetching(
-          `search?part=snippet&relatedToVideoId=${id}&type=video`
+          `search?part=snippet&channelId=${channelId}&type=video&order=date`
         );
+        if (cancelled) return;
 
-        setRelatedVideo(relatedData.items);
-      } catch (error) {
-        console.log(error);
+        setRelatedVideo(
+          (relatedData?.items ?? []).filter(
+            (item) => item?.id?.videoId && item.id.videoId !== id
+          )
+        );
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load video");
+          setVideoDetail(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+          setIsLoadingRelated(false);
+        }
       }
     };
+
     getData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
-  if (!videoDetail?.snippet) return <Loader />;
+  if (isLoading) return <Loader />;
+
+  if (error || !videoDetail?.snippet) {
+    return (
+      <Stack minHeight="90vh" justifyContent="center" alignItems="center">
+        <Typography variant="h6" sx={{ opacity: 0.6 }}>
+          {error || "This video is unavailable."}
+        </Typography>
+      </Stack>
+    );
+  }
+
+  const { snippet, statistics } = videoDetail;
 
   return (
     <Box minHeight={"90vh"} mb={10}>
@@ -50,22 +106,23 @@ const VideoDetail = () => {
             controls
           />
 
-          {videoDetail?.snippet.tags.map((item, idx) => (
+          {snippet?.tags?.map((item, idx) => (
             <Chip
               label={item}
-              key={idx}
+              key={`${item}-${idx}`}
               sx={{ marginTop: "10px", cursor: "pointer", ml: "10px" }}
-              deleteIcon={<Tag />}
-              onDelete={() => {}}
+              icon={<Tag />}
               variant="outlined"
             />
           ))}
+
           <Typography variant="h5" fontWeight="bold" p={2}>
-            {videoDetail?.snippet.title}
+            {snippet?.title}
           </Typography>
           <Typography variant="subtitle2" p={2} sx={{ opacity: ".7" }}>
-            {videoDetail?.snippet.description}
+            {snippet?.description}
           </Typography>
+
           <Stack direction="row" gap="20px" alignItems="center" py={1} px={2}>
             <Stack
               sx={{ opacity: 0.7 }}
@@ -74,10 +131,7 @@ const VideoDetail = () => {
               gap="3px"
             >
               <Visibility />
-              {parseInt(
-                videoDetail?.statistics.viewCount
-              ).toLocaleString()}{" "}
-              views
+              {formatCount(statistics?.viewCount)} views
             </Stack>
             <Stack
               sx={{ opacity: 0.7 }}
@@ -86,12 +140,8 @@ const VideoDetail = () => {
               gap="3px"
             >
               <FavoriteOutlined />
-              {parseInt(
-                videoDetail?.statistics.likeCount
-              ).toLocaleString()}{" "}
-              likes
+              {formatCount(statistics?.likeCount)} likes
             </Stack>
-
             <Stack
               sx={{ opacity: 0.7 }}
               direction="row"
@@ -99,14 +149,12 @@ const VideoDetail = () => {
               gap="3px"
             >
               <MarkChatRead />
-              {parseInt(
-                videoDetail?.statistics.commentCount
-              ).toLocaleString()}{" "}
-              comment
+              {formatCount(statistics?.commentCount)} comments
             </Stack>
           </Stack>
+
           <Stack direction="row" gap="20px" alignItems="center" py={1} px={2}>
-            <Link to={`/channel/${videoDetail?.snippet?.channelId}`}>
+            <Link to={`/channel/${snippet?.channelId}`}>
               <Stack
                 direction="row"
                 alignItems="center"
@@ -114,11 +162,11 @@ const VideoDetail = () => {
                 marginTop="5px"
               >
                 <Avatar
-                  alt={videoDetail?.snippet.channelTitle}
-                  src={videoDetail?.snippet.thumbnails.default.url}
+                  alt={snippet?.channelTitle}
+                  src={snippet?.thumbnails?.default?.url}
                 />
                 <Typography variant="subtitle2" color="gray">
-                  {videoDetail?.snippet.channelTitle}
+                  {snippet?.channelTitle}
                   <CheckCircle
                     sx={{ fontSize: "12px", color: "gray", ml: "5px" }}
                   />
@@ -127,16 +175,15 @@ const VideoDetail = () => {
             </Link>
           </Stack>
         </Box>
+
         <Box
           width={{ xs: "100%", md: "25%" }}
           px={2}
           py={{ md: 1, xs: 5 }}
-          justifyContent="center"
-          alignItems="center"
-          overflow={"scroll"}
+          overflow={"auto"}
           maxHeight={"120vh"}
         >
-          <Videos videos={relatedVideo} />
+          <Videos videos={relatedVideo} isLoading={isLoadingRelated} />
         </Box>
       </Box>
     </Box>
