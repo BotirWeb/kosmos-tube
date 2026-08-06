@@ -5,32 +5,48 @@ import { ApiService } from "../../service/api.service";
 import { ChannelCard, Videos } from "../";
 
 const Channel = () => {
-  const [channelDetail, setChannelDetail] = useState();
+  const [channelDetail, setChannelDetail] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const dataChannelDetail = await ApiService.fetching(
-          `channels?part=snippet&id=${id}`
-        );
-        setChannelDetail(dataChannelDetail.items[0]);
+    let cancelled = false;
 
-        const dataVideo = await ApiService.fetching(
+    const getData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // statistics -> subscriber count, brandingSettings -> banner image.
+        // Both are read by the UI, so they must be requested explicitly.
+        const channelData = await ApiService.fetching(
+          `channels?part=snippet,statistics,brandingSettings&id=${id}`
+        );
+        if (!cancelled) setChannelDetail(channelData?.items?.[0] ?? null);
+
+        // order=date returns the channel's uploads newest-first and keeps
+        // the channel itself out of the result list.
+        const videoData = await ApiService.fetching(
           `search?channelId=${id}&part=snippet%2Cid&order=date`
         );
-
-        // %2Cid&order=date
-        // bu kanalning ichida vediolar ichidan ushbu kirilgan kanal chiqmasligi uchun
-
-        setVideos(dataVideo?.items);
-      } catch (error) {
-        console.log(error);
+        if (!cancelled) setVideos(videoData?.items ?? []);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load channel");
+          setVideos([]);
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     getData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   return (
@@ -44,14 +60,16 @@ const Channel = () => {
             backgroundImage: `url(${channelDetail?.brandingSettings?.image?.bannerExternalUrl})`,
             backgroundPosition: "center",
             backgroundSize: "cover",
-            objectFit: "cover",
             backgroundRepeat: "no-repeat",
+            backgroundColor: "#e3e3e3",
           }}
         />
-        <ChannelCard video={channelDetail} marginTop={"-100px"} />
+        {channelDetail && (
+          <ChannelCard video={channelDetail} marginTop={"-100px"} />
+        )}
       </Box>
       <Container maxWidth={"90%"}>
-        <Videos videos={videos} />
+        <Videos videos={videos} isLoading={isLoading} error={error} />
       </Container>
     </Box>
   );
