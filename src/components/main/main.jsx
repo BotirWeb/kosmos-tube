@@ -42,12 +42,15 @@ const Main = () => {
   }, [selectedCategory]);
 
   return (
-    <Stack>
+    <Stack
+      direction={{ xs: "column", md: "row" }}
+      alignItems={{ xs: "stretch", md: "flex-start" }}
+    >
       <Category
         selectedCategoryHandler={selectedCategoryHandler}
         selectedCategory={selectedCategory}
       />
-      <Box sx={{ minHeight: "90vh" }} p={2}>
+      <Box sx={{ minHeight: "90vh", flex: 1, minWidth: 0 }} p={2}>
         <Typography variant={"h4"} fontWeight={"bold"} mb={2}>
           {selectedCategory}{" "}
           <span style={{ color: colors.secondary }}>videos</span>
