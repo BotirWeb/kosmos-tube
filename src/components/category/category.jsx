@@ -4,29 +4,35 @@ import { colors } from "../../constants/colors";
 
 const Category = ({ selectedCategory, selectedCategoryHandler }) => {
   return (
-    <Stack direction={"row"} sx={{ overflowX: "scroll" }}>
-      {category.map((item) => (
-        <button
-          key={item.name}
-          className="category-btn"
-          style={{
-            borderRadius: "0",
-            background: item.name === selectedCategory && colors.secondary,
-            color: item.name === selectedCategory && "#fff",
-          }}
-          onClick={() => selectedCategoryHandler(item.name)}
-        >
-          <span
+    <Stack direction={"row"} sx={{ overflowX: "auto" }}>
+      {category.map((item) => {
+        const isActive = item.name === selectedCategory;
+
+        return (
+          <button
+            key={item.name}
+            className="category-btn"
+            aria-pressed={isActive}
             style={{
-              color: item.name === selectedCategory ? "#fff" : colors.secondary,
-              marginRight: "15px",
+              borderRadius: 0,
+              background: isActive ? colors.secondary : "transparent",
+              color: isActive ? "#fff" : "inherit",
             }}
+            onClick={() => selectedCategoryHandler(item.name)}
           >
-            {item.icon}
-          </span>
-          <span style={{ opacity: "1" }}>{item.name}</span>
-        </button>
-      ))}
+            <span
+              style={{
+                color: isActive ? "#fff" : colors.secondary,
+                marginRight: "15px",
+                display: "flex",
+              }}
+            >
+              {item.icon}
+            </span>
+            <span>{item.name}</span>
+          </button>
+        );
+      })}
     </Stack>
   );
 };
