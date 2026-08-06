@@ -1,6 +1,15 @@
 import { Stack, Box, Typography } from "@mui/material";
 import { SearchOff, ErrorOutline } from "@mui/icons-material";
-import { VideoCard, ChannelCard, Loader } from "..";
+import { VideoCard, ChannelCard } from "..";
+import VideoCardSkeleton from "../video-card/video-card-skeleton";
+
+const gridSx = {
+  width: "100%",
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+  gap: 2,
+  alignItems: "start",
+};
 
 const Message = ({ icon, title, hint }) => (
   <Stack
@@ -18,7 +27,15 @@ const Message = ({ icon, title, hint }) => (
 );
 
 const Videos = ({ videos, isLoading, error }) => {
-  if (isLoading) return <Loader />;
+  if (isLoading) {
+    return (
+      <Box sx={gridSx}>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <VideoCardSkeleton key={i} />
+        ))}
+      </Box>
+    );
+  }
 
   if (error) {
     return (
@@ -41,21 +58,14 @@ const Videos = ({ videos, isLoading, error }) => {
   }
 
   return (
-    <Stack
-      width={"100%"}
-      direction={"row"}
-      flexWrap="wrap"
-      justifyContent="start"
-      alignItems="start"
-      gap={2}
-    >
+    <Box sx={gridSx}>
       {videos.map((item) => (
         <Box key={item?.id?.videoId || item?.id?.channelId || item?.etag}>
           {item?.id?.videoId && <VideoCard video={item} />}
           {item?.id?.channelId && <ChannelCard video={item} />}
         </Box>
       ))}
-    </Stack>
+    </Box>
   );
 };
 

@@ -6,7 +6,7 @@
 
 a {
   text-decoration: none;
-  color: black;
+  color: inherit;
 }
 
 ::-webkit-scrollbar {
@@ -27,7 +27,15 @@ a {
 .search_bar {
   border: none;
   outline: none;
-  width: 350px;
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.search_bar:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .category-btn {
@@ -35,7 +43,7 @@ a {
   text-transform: capitalize;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   cursor: pointer;
   background: transparent;
   outline: none;
@@ -44,6 +52,11 @@ a {
   margin: 10px 0;
   border-radius: 20px;
   transition: all 0.3s ease;
+}
+
+.category-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .category-btn:hover {
@@ -61,10 +74,6 @@ a {
 }
 
 @media screen and (max-width: 600px) {
-  .search_bar {
-    width: 200px;
-  }
-
   .react-player {
     height: 45vh !important;
   }

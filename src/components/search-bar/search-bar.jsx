@@ -23,10 +23,12 @@ const SearchBar = () => {
       component={"form"}
       onSubmit={submitHandler}
       sx={{
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
         border: `1px solid ${colors.secondary}`,
         pl: 2,
         boxShadow: "none",
-        mr: "5px",
       }}
     >
       <input

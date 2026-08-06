@@ -10,12 +10,24 @@ import {
   Tag,
   Visibility,
 } from "@mui/icons-material";
-import { Videos, Loader } from "../";
+import { Loader } from "../";
+import RelatedVideoCard, {
+  RelatedVideoCardSkeleton,
+} from "../video-card/related-video-card";
 
 const formatCount = (value) =>
   value === undefined || value === null
     ? "—"
     : parseInt(value, 10).toLocaleString("en-US");
+
+const clamp = (lines) => ({
+  display: "-webkit-box",
+  WebkitLineClamp: lines,
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
+});
+
+const DESCRIPTION_CLAMP_THRESHOLD = 220;
 
 const VideoDetail = () => {
   const [videoDetail, setVideoDetail] = useState(null);
@@ -23,6 +35,7 @@ const VideoDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingRelated, setIsLoadingRelated] = useState(true);
   const [error, setError] = useState(null);
+  const [descExpanded, setDescExpanded] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -32,6 +45,7 @@ const VideoDetail = () => {
       setIsLoading(true);
       setIsLoadingRelated(true);
       setError(null);
+      setDescExpanded(false);
 
       try {
         const data = await ApiService.fetching(
@@ -95,6 +109,8 @@ const VideoDetail = () => {
   }
 
   const { snippet, statistics } = videoDetail;
+  const description = snippet?.description ?? "";
+  const isLongDescription = description.length > DESCRIPTION_CLAMP_THRESHOLD;
 
   return (
     <Box minHeight={"90vh"} mb={10}>
@@ -106,22 +122,49 @@ const VideoDetail = () => {
             controls
           />
 
-          {snippet?.tags?.map((item, idx) => (
-            <Chip
-              label={item}
-              key={`${item}-${idx}`}
-              sx={{ marginTop: "10px", cursor: "pointer", ml: "10px" }}
-              icon={<Tag />}
-              variant="outlined"
-            />
-          ))}
+          {snippet?.tags?.length > 0 && (
+            <Stack direction="row" flexWrap="wrap" gap="8px" px={2} pt={2}>
+              {snippet.tags.map((item, idx) => (
+                <Chip
+                  label={item}
+                  key={`${item}-${idx}`}
+                  sx={{ cursor: "pointer" }}
+                  icon={<Tag />}
+                  variant="outlined"
+                />
+              ))}
+            </Stack>
+          )}
 
           <Typography variant="h5" fontWeight="bold" p={2}>
             {snippet?.title}
           </Typography>
-          <Typography variant="subtitle2" p={2} sx={{ opacity: ".7" }}>
-            {snippet?.description}
-          </Typography>
+          <Box px={2}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                opacity: 0.7,
+                whiteSpace: "pre-line",
+                ...(!descExpanded && isLongDescription ? clamp(3) : {}),
+              }}
+            >
+              {description}
+            </Typography>
+            {isLongDescription && (
+              <Typography
+                variant="body2"
+                onClick={() => setDescExpanded((prev) => !prev)}
+                sx={{
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  mt: "6px",
+                  display: "inline-block",
+                }}
+              >
+                {descExpanded ? "Show less" : "Show more"}
+              </Typography>
+            )}
+          </Box>
 
           <Stack direction="row" gap="20px" alignItems="center" py={1} px={2}>
             <Stack
@@ -183,7 +226,24 @@ const VideoDetail = () => {
           overflow={"auto"}
           maxHeight={"120vh"}
         >
-          <Videos videos={relatedVideo} isLoading={isLoadingRelated} />
+          <Stack gap={"14px"}>
+            {isLoadingRelated ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <RelatedVideoCardSkeleton key={i} />
+              ))
+            ) : relatedVideo.length ? (
+              relatedVideo.map((item) => (
+                <RelatedVideoCard
+                  key={item?.id?.videoId ?? item?.etag}
+                  video={item}
+                />
+              ))
+            ) : (
+              <Typography variant="body2" sx={{ opacity: 0.6 }}>
+                No related videos.
+              </Typography>
+            )}
+          </Stack>
         </Box>
       </Box>
     </Box>

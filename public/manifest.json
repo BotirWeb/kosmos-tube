@@ -1,0 +1,20 @@
+{
+  "short_name": "Kosmos Tube",
+  "name": "Kosmos Tube — video streaming built with React",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#76323F",
+  "background_color": "#fcfaf5"
+}

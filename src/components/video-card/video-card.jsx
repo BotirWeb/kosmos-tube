@@ -7,7 +7,6 @@ import {
   Avatar,
 } from "@mui/material";
 import moment from "moment";
-import { colors } from "../../constants/colors";
 import { CheckCircle } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
@@ -24,9 +23,18 @@ const VideoCard = ({ video }) => {
   return (
     <Card
       sx={{
-        width: { xs: "100%", sm: "360px", md: "320px" },
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
         boxShadow: "none",
-        borderRadius: 0,
+        border: "1px solid",
+        borderColor: "divider",
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: 4,
+        },
       }}
     >
       <Link to={`/video/${video?.id?.videoId}`}>
@@ -35,17 +43,18 @@ const VideoCard = ({ video }) => {
           image={snippet?.thumbnails?.high?.url}
           alt={snippet?.title ?? "Video thumbnail"}
           sx={{
-            width: { xs: "100%", sm: "360px" },
-            height: "180px",
+            width: "100%",
+            aspectRatio: "16 / 9",
             objectFit: "cover",
           }}
         />
       </Link>
       <CardContent
         sx={{
-          background: colors.primary,
-          height: "200px",
-          position: "relative",
+          bgcolor: "background.paper",
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
         }}
       >
         <Link to={`/video/${video?.id?.videoId}`}>
@@ -63,18 +72,21 @@ const VideoCard = ({ video }) => {
         <Link to={`/channel/${snippet?.channelId}`}>
           <Stack
             direction={"row"}
-            position={"absolute"}
-            bottom={"10px"}
             alignItems={"center"}
             gap={"5px"}
+            mt={"auto"}
+            pt={"10px"}
           >
-            <Avatar alt={snippet?.channelTitle}>
+            <Avatar
+              alt={snippet?.channelTitle}
+              sx={{ width: 28, height: 28 }}
+            >
               {snippet?.channelTitle?.charAt(0)}
             </Avatar>
-            <Typography variant="subtitle2" color={"gray"}>
+            <Typography variant="subtitle2" color={"text.secondary"}>
               {snippet?.channelTitle}
               <CheckCircle
-                sx={{ fontSize: "12px", color: "gray", ml: "5px" }}
+                sx={{ fontSize: "12px", color: "text.secondary", ml: "5px" }}
               />
             </Typography>
           </Stack>

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { Routes, Route } from "react-router-dom";
-import { Main, Channel, VideoDetail, Search, Navbar, NotFound } from "../";
+import { Main, Channel, VideoDetail, Search, Navbar, NotFound, Footer } from "../";
 
 const App = () => {
   return (
@@ -13,6 +13,7 @@ const App = () => {
         <Route path="/search/:id" element={<Search />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Footer />
     </Box>
   );
 };

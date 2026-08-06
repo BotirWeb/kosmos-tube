@@ -54,18 +54,21 @@ const Channel = () => {
       <Box>
         <Box
           width={"100%"}
-          height={"200px"}
           zIndex={10}
           sx={{
+            height: "clamp(100px, 20vw, 280px)",
             backgroundImage: `url(${channelDetail?.brandingSettings?.image?.bannerExternalUrl})`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
-            backgroundColor: "#e3e3e3",
+            bgcolor: "action.hover",
           }}
         />
         {channelDetail && (
-          <ChannelCard video={channelDetail} marginTop={"-100px"} />
+          <ChannelCard
+            video={channelDetail}
+            marginTop={{ xs: "-50px", sm: "-70px", md: "-100px" }}
+          />
         )}
       </Box>
       <Container maxWidth={"90%"}>
