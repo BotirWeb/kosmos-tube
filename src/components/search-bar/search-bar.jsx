@@ -10,10 +10,13 @@ const SearchBar = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    navigate(`/search/${value}`);
+
+    const query = value.trim();
+    if (!query) return;
+
+    navigate(`/search/${encodeURIComponent(query)}`);
     setValue("");
   };
-  console.log(value);
 
   return (
     <Paper
@@ -30,10 +33,11 @@ const SearchBar = () => {
         type="text"
         placeholder="Search..."
         className="search_bar"
+        aria-label="Search videos"
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
-      <IconButton type="submit">
+      <IconButton type="submit" aria-label="Submit search">
         <Search />
       </IconButton>
     </Paper>
