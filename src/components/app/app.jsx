@@ -1,9 +1,8 @@
 import { Box } from "@mui/material";
 import { Routes, Route } from "react-router-dom";
-import { Main, Channel, VideoDetail, Search, Navbar } from "../";
+import { Main, Channel, VideoDetail, Search, Navbar, NotFound } from "../";
 
 const App = () => {
-  console.log(<Route path="/" element={<Main />} />);
   return (
     <Box>
       <Navbar />
@@ -12,6 +11,7 @@ const App = () => {
         <Route path="/channel/:id" element={<Channel />} />
         <Route path="/video/:id" element={<VideoDetail />} />
         <Route path="/search/:id" element={<Search />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Box>
   );
