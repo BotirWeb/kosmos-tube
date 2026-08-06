@@ -17,7 +17,7 @@ const clamp = (lines) => ({
   overflow: "hidden",
 });
 
-const VideoCard = ({ video }) => {
+const VideoCard = ({ video, avatarUrl }) => {
   const { snippet } = video ?? {};
 
   return (
@@ -79,6 +79,7 @@ const VideoCard = ({ video }) => {
           >
             <Avatar
               alt={snippet?.channelTitle}
+              src={avatarUrl}
               sx={{ width: 28, height: 28 }}
             >
               {snippet?.channelTitle?.charAt(0)}
