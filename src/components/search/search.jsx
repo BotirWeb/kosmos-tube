@@ -6,32 +6,50 @@ import { colors } from "../../constants/colors";
 import { Videos } from "../";
 
 const Search = () => {
-  const [video, setVideo] = useState([]);
+  const [videos, setVideos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { id } = useParams();
 
-  console.log(id);
+  const query = decodeURIComponent(id ?? "");
 
   useEffect(() => {
+    let cancelled = false;
+
     const getData = async () => {
+      setIsLoading(true);
+      setError(null);
+
       try {
-        const data = await ApiService.fetching(`search?part=snippet&q=${id}`);
-        setVideo(data.items);
-      } catch (error) {
-        console.log(error);
+        const data = await ApiService.fetching(
+          `search?part=snippet&q=${encodeURIComponent(query)}`
+        );
+        if (!cancelled) setVideos(data?.items ?? []);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load search results");
+          setVideos([]);
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     getData();
-  }, [id]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
 
   return (
-    <Box p={2} sx={{ height: "90vh" }}>
+    <Box p={2} sx={{ minHeight: "90vh" }}>
       <Container maxWidth={"90%"}>
         <Typography variant={"h4"} fontWeight={"bold"} mb={2}>
           Search results for{" "}
-          <span style={{ color: colors.secondary }}>{id}</span> videos
+          <span style={{ color: colors.secondary }}>{query}</span>
         </Typography>
-        <Videos videos={video} />
+        <Videos videos={videos} isLoading={isLoading} error={error} />
       </Container>
     </Box>
   );

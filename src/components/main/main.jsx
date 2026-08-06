@@ -7,24 +7,38 @@ import { ApiService } from "../../service/api.service";
 const Main = () => {
   const [selectedCategory, setSelectedCategory] = useState("New");
   const [videos, setVideos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const selectedCategoryHandler = (category) => setSelectedCategory(category);
 
   useEffect(() => {
+    let cancelled = false;
+
     const getData = async () => {
+      setIsLoading(true);
+      setError(null);
+
       try {
         const data = await ApiService.fetching(
-          `search?part=snippet&q=${selectedCategory}`
+          `search?part=snippet&q=${encodeURIComponent(selectedCategory)}`
         );
-        setVideos(data.items);
-      } catch (error) {
-        console.log(error);
+        if (!cancelled) setVideos(data?.items ?? []);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load videos");
+          setVideos([]);
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     getData();
 
-    // ApiService.fetching("search").then((data) => setVideos(data));
+    return () => {
+      cancelled = true;
+    };
   }, [selectedCategory]);
 
   return (
@@ -33,17 +47,13 @@ const Main = () => {
         selectedCategoryHandler={selectedCategoryHandler}
         selectedCategory={selectedCategory}
       />
-      <Box sx={{ height: "90vh" }} p={2}>
+      <Box sx={{ minHeight: "90vh" }} p={2}>
         <Typography variant={"h4"} fontWeight={"bold"} mb={2}>
           {selectedCategory}{" "}
           <span style={{ color: colors.secondary }}>videos</span>
         </Typography>
 
-        <Videos
-          videos={videos}
-          selectedCategory={selectedCategory}
-          setVideos={setVideos}
-        />
+        <Videos videos={videos} isLoading={isLoading} error={error} />
       </Box>
     </Stack>
   );
