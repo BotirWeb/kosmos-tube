@@ -3,8 +3,10 @@ import { Box, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ApiService } from "../../service/api.service";
 import { ChannelCard, Videos } from "../";
+import { useColorMode } from "../../theme/color-mode-context";
 
 const Channel = () => {
+  const { mode } = useColorMode();
   const [channelDetail, setChannelDetail] = useState(null);
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,11 +59,20 @@ const Channel = () => {
           zIndex={10}
           sx={{
             height: "clamp(100px, 20vw, 280px)",
-            backgroundImage: `url(${channelDetail?.brandingSettings?.image?.bannerExternalUrl})`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
-            bgcolor: "action.hover",
+            ...(channelDetail?.brandingSettings?.image?.bannerExternalUrl
+              ? {
+                  backgroundImage: `url(${channelDetail.brandingSettings.image.bannerExternalUrl})`,
+                }
+              : {
+                  backgroundImage:
+                    mode === "dark"
+                      ? "linear-gradient(135deg, rgba(168,85,247,0.35), rgba(34,211,238,0.25))"
+                      : "none",
+                  bgcolor: "action.hover",
+                }),
           }}
         />
         {channelDetail && (

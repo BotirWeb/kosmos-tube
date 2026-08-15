@@ -1,6 +1,7 @@
 import { Box, Skeleton, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { useColorMode } from "../../theme/color-mode-context";
 
 const clamp = (lines) => ({
   display: "-webkit-box",
@@ -12,10 +13,24 @@ const clamp = (lines) => ({
 const RelatedVideoCard = ({ video }) => {
   const { snippet } = video ?? {};
   const videoId = video?.id?.videoId;
+  const { mode } = useColorMode();
 
   return (
     <Link to={`/video/${videoId}`}>
-      <Stack direction={"row"} gap={"10px"}>
+      <Stack
+        direction={"row"}
+        gap={"10px"}
+        sx={{
+          p: "6px",
+          m: "-6px",
+          borderRadius: 2,
+          transition: "background-color .2s ease",
+          "&:hover": {
+            backgroundColor:
+              mode === "dark" ? "rgba(255,255,255,0.05)" : "action.hover",
+          },
+        }}
+      >
         <Box
           component="img"
           src={snippet?.thumbnails?.medium?.url ?? snippet?.thumbnails?.high?.url}

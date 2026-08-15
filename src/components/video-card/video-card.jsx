@@ -9,6 +9,8 @@ import {
 import moment from "moment";
 import { CheckCircle } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { useColorMode } from "../../theme/color-mode-context";
+import { glassSx, cosmicGlow } from "../../theme/cosmic";
 
 const clamp = (lines) => ({
   display: "-webkit-box",
@@ -19,6 +21,8 @@ const clamp = (lines) => ({
 
 const VideoCard = ({ video, avatarUrl }) => {
   const { snippet } = video ?? {};
+  const { mode } = useColorMode();
+  const isDark = mode === "dark";
 
   return (
     <Card
@@ -28,12 +32,11 @@ const VideoCard = ({ video, avatarUrl }) => {
         display: "flex",
         flexDirection: "column",
         boxShadow: "none",
-        border: "1px solid",
-        borderColor: "divider",
+        ...glassSx(mode),
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: 4,
+          boxShadow: isDark ? `0 10px 32px ${cosmicGlow.purple}` : 4,
         },
       }}
     >
@@ -51,7 +54,6 @@ const VideoCard = ({ video, avatarUrl }) => {
       </Link>
       <CardContent
         sx={{
-          bgcolor: "background.paper",
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,

@@ -12,3 +12,4 @@ export { default as ChannelCard } from "./channel-card/channel-card";
 export { default as Loader } from "./loader/loader";
 export { default as NotFound } from "./not-found/not-found";
 export { default as Footer } from "./footer/footer";
+export { default as CosmicBackground } from "./cosmic-background/cosmic-background";

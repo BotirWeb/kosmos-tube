@@ -1,6 +1,10 @@
 import { Card, CardContent, Skeleton, Stack } from "@mui/material";
+import { useColorMode } from "../../theme/color-mode-context";
+import { glassSx } from "../../theme/cosmic";
 
 const VideoCardSkeleton = () => {
+  const { mode } = useColorMode();
+
   return (
     <Card
       sx={{
@@ -9,8 +13,7 @@ const VideoCardSkeleton = () => {
         display: "flex",
         flexDirection: "column",
         boxShadow: "none",
-        border: "1px solid",
-        borderColor: "divider",
+        ...glassSx(mode),
       }}
     >
       <Skeleton

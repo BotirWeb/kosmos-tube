@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { colors } from "../../constants/colors";
 import { Category, Videos } from "../";
 import { ApiService } from "../../service/api.service";
+import { useColorMode } from "../../theme/color-mode-context";
+import { gradientTextSx } from "../../theme/cosmic";
 
 const Main = () => {
+  const { mode } = useColorMode();
   const [selectedCategory, setSelectedCategory] = useState("New");
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +56,11 @@ const Main = () => {
       <Box sx={{ minHeight: "90vh", flex: 1, minWidth: 0 }} p={2}>
         <Typography variant={"h4"} fontWeight={"bold"} mb={2}>
           {selectedCategory}{" "}
-          <span style={{ color: colors.secondary }}>videos</span>
+          <span
+            style={mode === "dark" ? gradientTextSx : { color: colors.secondary }}
+          >
+            videos
+          </span>
         </Typography>
 
         <Videos videos={videos} isLoading={isLoading} error={error} />

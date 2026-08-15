@@ -1,18 +1,21 @@
 import { createTheme } from "@mui/material/styles";
 
-const brand = "#76323F";
+const purple = "#a855f7";
+const pink = "#ec4899";
+const cyan = "#22d3ee";
 
 export const getDesignTokens = (mode) => ({
   palette: {
     mode,
-    primary: { main: brand },
-    secondary: { main: brand },
+    primary: { main: purple },
+    secondary: { main: pink },
+    info: { main: cyan },
     ...(mode === "light"
       ? {
           background: { default: "#fcfaf5", paper: "#ffffff" },
         }
       : {
-          background: { default: "#101012", paper: "#1b1b1e" },
+          background: { default: "#060714", paper: "#12142b" },
         }),
   },
   shape: { borderRadius: 12 },

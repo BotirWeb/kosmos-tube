@@ -10,6 +10,8 @@ import {
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { category } from "../../constants";
 import { colors } from "../../constants/colors";
+import { useColorMode } from "../../theme/color-mode-context";
+import { cosmicGlow } from "../../theme/cosmic";
 
 const STORAGE_KEY = "kosmos-tube-sidebar-collapsed";
 const SIDEBAR_WIDTH = 220;
@@ -18,6 +20,8 @@ const SIDEBAR_WIDTH_COLLAPSED = 72;
 const Category = ({ selectedCategory, selectedCategoryHandler }) => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const { mode } = useColorMode();
+  const isDark = mode === "dark";
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(STORAGE_KEY) === "true"
   );
@@ -73,6 +77,8 @@ const Category = ({ selectedCategory, selectedCategoryHandler }) => {
                 padding: collapsed ? "10px 0" : "7px 15px",
                 background: isActive ? colors.secondary : "transparent",
                 color: isActive ? "#fff" : "inherit",
+                boxShadow:
+                  isActive && isDark ? `0 0 20px ${cosmicGlow.purple}` : "none",
               }}
               onClick={() => selectedCategoryHandler(item.name)}
             >
@@ -115,6 +121,8 @@ const Category = ({ selectedCategory, selectedCategoryHandler }) => {
               style={{
                 background: isActive ? colors.secondary : "transparent",
                 color: isActive ? "#fff" : "inherit",
+                boxShadow:
+                  isActive && isDark ? `0 0 20px ${cosmicGlow.purple}` : "none",
               }}
               onClick={() => selectedCategoryHandler(item.name)}
             >

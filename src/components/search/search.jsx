@@ -4,8 +4,11 @@ import { ApiService } from "../../service/api.service";
 import { Box, Container, Typography } from "@mui/material";
 import { colors } from "../../constants/colors";
 import { Videos } from "../";
+import { useColorMode } from "../../theme/color-mode-context";
+import { gradientTextSx } from "../../theme/cosmic";
 
 const Search = () => {
+  const { mode } = useColorMode();
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,7 +50,11 @@ const Search = () => {
       <Container maxWidth={"90%"}>
         <Typography variant={"h4"} fontWeight={"bold"} mb={2}>
           Search results for{" "}
-          <span style={{ color: colors.secondary }}>{query}</span>
+          <span
+            style={mode === "dark" ? gradientTextSx : { color: colors.secondary }}
+          >
+            {query}
+          </span>
         </Typography>
         <Videos videos={videos} isLoading={isLoading} error={error} />
       </Container>

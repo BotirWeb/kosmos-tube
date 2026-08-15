@@ -1,13 +1,19 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { useColorMode } from "../../theme/color-mode-context";
 
 const Footer = () => {
+  const { mode } = useColorMode();
+  const isDark = mode === "dark";
+
   return (
     <Box
       component="footer"
       sx={{
+        backgroundColor: isDark ? "rgba(255,255,255,0.045)" : "background.paper",
+        backdropFilter: isDark ? "blur(16px)" : "none",
+        WebkitBackdropFilter: isDark ? "blur(16px)" : "none",
         borderTop: "1px solid",
         borderColor: "divider",
-        bgcolor: "background.paper",
         py: 3,
         px: 2,
         mt: 4,
@@ -30,7 +36,10 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
             variant="body2"
-            sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
+            sx={{
+              opacity: 0.7,
+              "&:hover": { opacity: 1, color: "primary.main" },
+            }}
           >
             Live demo
           </Typography>
@@ -40,7 +49,10 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
             variant="body2"
-            sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
+            sx={{
+              opacity: 0.7,
+              "&:hover": { opacity: 1, color: "primary.main" },
+            }}
           >
             GitHub
           </Typography>

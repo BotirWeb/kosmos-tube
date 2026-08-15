@@ -14,6 +14,8 @@ import { Loader } from "../";
 import RelatedVideoCard, {
   RelatedVideoCardSkeleton,
 } from "../video-card/related-video-card";
+import { useColorMode } from "../../theme/color-mode-context";
+import { cosmicGlow } from "../../theme/cosmic";
 
 const formatCount = (value) =>
   value === undefined || value === null
@@ -37,6 +39,8 @@ const VideoDetail = () => {
   const [error, setError] = useState(null);
   const [descExpanded, setDescExpanded] = useState(false);
   const { id } = useParams();
+  const { mode } = useColorMode();
+  const isDark = mode === "dark";
 
   useEffect(() => {
     let cancelled = false;
@@ -131,6 +135,7 @@ const VideoDetail = () => {
                   sx={{ cursor: "pointer" }}
                   icon={<Tag />}
                   variant="outlined"
+                  color="primary"
                 />
               ))}
             </Stack>
@@ -157,6 +162,7 @@ const VideoDetail = () => {
                 sx={{
                   cursor: "pointer",
                   fontWeight: "bold",
+                  color: "primary.main",
                   mt: "6px",
                   display: "inline-block",
                 }}
@@ -207,11 +213,14 @@ const VideoDetail = () => {
                 <Avatar
                   alt={snippet?.channelTitle}
                   src={snippet?.thumbnails?.default?.url}
+                  sx={{
+                    boxShadow: isDark ? `0 0 16px ${cosmicGlow.purple}` : "none",
+                  }}
                 />
-                <Typography variant="subtitle2" color="gray">
+                <Typography variant="subtitle2" color="text.secondary">
                   {snippet?.channelTitle}
                   <CheckCircle
-                    sx={{ fontSize: "12px", color: "gray", ml: "5px" }}
+                    sx={{ fontSize: "12px", color: "text.secondary", ml: "5px" }}
                   />
                 </Typography>
               </Stack>
